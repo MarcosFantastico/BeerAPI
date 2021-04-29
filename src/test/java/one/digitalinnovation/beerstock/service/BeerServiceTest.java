@@ -202,6 +202,19 @@ public class BeerServiceTest {
 
         assertThrows(BeerNotFoundException.class, () -> beerService.increment(INVALID_BEER_ID, quantityToIncrement));
     }
+    
+    @Test
+    void whenAbeerIsRenamedThenAbeerHaveToBeUptated() throws BeerAlreadyRegisteredException {
+        BeerDTO expectedUpdatedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+        Beer expectedUpdatedBeer = beerMapper.toModel(expectedUpdatedBeerDTO);
+        // when
+        when(beerRepository.findByName(expectedUpdatedBeerDTO.getName())).thenReturn(Optional.of(expectedUpdatedBeer));
+        // then
+        beerService.updateByName(expectedUpdatedBeerDTO.getName());
+        verify(beerRepository, times(1)).findByName(expectedUpdatedBeerDTO.getName());
+        // then
+        assertThrows(BeerAlreadyRegisteredException.class, () -> beerService.updateByName(expectedUpdatedBeer.toString()));
+    }
 
 //
 //    @Test
